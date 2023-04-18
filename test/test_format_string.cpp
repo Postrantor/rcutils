@@ -22,7 +22,8 @@
 #include "rcutils/allocator.h"
 #include "rcutils/format_string.h"
 
-TEST(test_format_string_limit, nominal) {
+TEST(test_format_string_limit, nominal)
+{
   {
     auto allocator = rcutils_get_default_allocator();
     char * formatted = rcutils_format_string_limit(allocator, 10, "%s", "test");
@@ -51,7 +52,8 @@ TEST(test_format_string_limit, nominal) {
   }
 }
 
-TEST(test_format_string_limit, invalid_arguments) {
+TEST(test_format_string_limit, invalid_arguments)
+{
   auto allocator = rcutils_get_default_allocator();
   auto failing_allocator = get_failing_allocator();
 

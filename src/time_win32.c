@@ -13,12 +13,11 @@
 // limitations under the License.
 
 #ifndef _WIN32
-# error time_win32.c is only intended to be used with win32 based systems
-#endif  // _WIN32
+#error time_win32.c is only intended to be used with win32 based systems
+#endif // _WIN32
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include "rcutils/time.h"
@@ -40,47 +39,72 @@ extern "C"
 #include "rcutils/allocator.h"
 #include "rcutils/error_handling.h"
 
-rcutils_ret_t
-rcutils_system_time_now(rcutils_time_point_value_t * now)
+/**
+ * @brief 获取系统当前时间（Get the current system time）
+ * @param[out] now 存储系统当前时间的变量指针（Pointer to a variable that stores the current system time）
+ * @return rcutils_ret_t 返回操作结果（Return the operation result）
+ */
+rcutils_ret_t rcutils_system_time_now(rcutils_time_point_value_t * now)
 {
+  // 检查输入参数是否为空（Check if the input argument is NULL）
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(now, RCUTILS_RET_INVALID_ARGUMENT);
+
+  // 定义 FILETIME 结构体变量（Define a FILETIME structure variable）
   FILETIME ft;
+
+  // 获取系统当前精确时间，并存储到 FILETIME 结构体中（Get the current precise system time and store it in the FILETIME structure）
   GetSystemTimePreciseAsFileTime(&ft);
+
+  // 定义 LARGE_INTEGER 结构体变量（Define a LARGE_INTEGER structure variable）
   LARGE_INTEGER li;
+
+  // 将 FILETIME 结构体中的低位和高位分别赋值给 LARGE_INTEGER 结构体（Assign the low and high parts of the FILETIME structure to the LARGE_INTEGER structure）
   li.LowPart = ft.dwLowDateTime;
   li.HighPart = ft.dwHighDateTime;
-  // Adjust for January 1st, 1970, see:
-  //   https://support.microsoft.com/en-us/kb/167296
+
+  // 调整为从1970年1月1日开始，参考：https://support.microsoft.com/en-us/kb/167296
+  // (Adjust for January 1st, 1970, see: https://support.microsoft.com/en-us/kb/167296)
   li.QuadPart -= 116444736000000000;
-  // Convert to nanoseconds from 100's of nanoseconds.
+
+  // 将100纳秒单位转换为纳秒单位（Convert from 100-nanosecond units to nanoseconds）
   *now = li.QuadPart * 100;
+
+  // 返回操作成功（Return operation success）
   return RCUTILS_RET_OK;
 }
 
-rcutils_ret_t
-rcutils_steady_time_now(rcutils_time_point_value_t * now)
+/**
+ * @brief 获取稳定的当前时间（Get the current stable time）
+ * @param[out] now 存储稳定当前时间的变量指针（Pointer to a variable that stores the current stable time）
+ * @return rcutils_ret_t 返回操作结果（Return the operation result）
+ */
+rcutils_ret_t rcutils_steady_time_now(rcutils_time_point_value_t * now)
 {
+  // 检查输入参数是否为空（Check if the input argument is NULL）
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(now, RCUTILS_RET_INVALID_ARGUMENT);
+
+  // 定义 LARGE_INTEGER 结构体变量（Define LARGE_INTEGER structure variables）
   LARGE_INTEGER cpu_frequency, performance_count;
-  // These should not ever fail since XP is already end of life:
-  // From https://msdn.microsoft.com/en-us/library/windows/desktop/ms644905(v=vs.85).aspx and
-  //      https://msdn.microsoft.com/en-us/library/windows/desktop/ms644904(v=vs.85).aspx:
-  // "On systems that run Windows XP or later, the function will always succeed and will
-  //  thus never return zero."
+
+  // 查询性能频率和性能计数器，这些操作在 Windows XP 及更高版本中不会失败
+  // (Query performance frequency and performance counter, these operations will not fail in Windows XP or higher)
   QueryPerformanceFrequency(&cpu_frequency);
   QueryPerformanceCounter(&performance_count);
-  // Calculate nanoseconds and seconds separately because
-  // otherwise overflow can happen in intermediate calculations
-  // This conversion will overflow if the PC runs >292 years non-stop
+
+  // 分别计算纳秒和秒，以防止中间计算溢出
+  // (Calculate nanoseconds and seconds separately to prevent overflow in intermediate calculations)
   const rcutils_time_point_value_t whole_seconds =
     performance_count.QuadPart / cpu_frequency.QuadPart;
   const rcutils_time_point_value_t remainder_count =
     performance_count.QuadPart % cpu_frequency.QuadPart;
   const rcutils_time_point_value_t remainder_ns =
     RCUTILS_S_TO_NS(remainder_count) / cpu_frequency.QuadPart;
-  const rcutils_time_point_value_t total_ns =
-    RCUTILS_S_TO_NS(whole_seconds) + remainder_ns;
+  const rcutils_time_point_value_t total_ns = RCUTILS_S_TO_NS(whole_seconds) + remainder_ns;
+
+  // 将计算结果赋值给输出参数（Assign the calculated result to the output argument）
   *now = total_ns;
+
+  // 返回操作成功（Return operation success）
   return RCUTILS_RET_OK;
 }
 

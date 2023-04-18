@@ -18,27 +18,31 @@
 #define RCUTILS__ISALNUM_NO_LOCALE_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-/// Custom isalnum() which is not affected by locale.
-static inline
-bool
-rcutils_isalnum_no_locale(char c)
+/**
+ * @brief 自定义 isalnum() 函数，不受区域设置影响 (Custom isalnum() which is not affected by locale)
+ *
+ * @param c 输入字符 (Input character)
+ * @return true 如果输入字符是字母或数字 (If the input character is a letter or digit)
+ * @return false 如果输入字符不是字母或数字 (If the input character is not a letter or digit)
+ */
+static inline bool rcutils_isalnum_no_locale(char c)
 {
-  // if in '0', ..., '9', then ok
+  // 如果在 '0', ..., '9' 之间，则返回 true (If in '0', ..., '9', then return true)
   if (c >= 0x30 /*0*/ && c <= 0x39 /*9*/) {
     return true;
   }
-  // if in 'A', ..., 'Z', then ok
+  // 如果在 'A', ..., 'Z' 之间，则返回 true (If in 'A', ..., 'Z', then return true)
   if (c >= 0x41 /*A*/ && c <= 0x5a /*Z*/) {
     return true;
   }
-  // if in 'a', ..., 'z', then ok
+  // 如果在 'a', ..., 'z' 之间，则返回 true (If in 'a', ..., 'z', then return true)
   if (c >= 0x61 /*a*/ && c <= 0x7a /*z*/) {
     return true;
   }
+  // 其他情况下，返回 false (In other cases, return false)
   return false;
 }
 
@@ -46,4 +50,4 @@ rcutils_isalnum_no_locale(char c)
 }
 #endif
 
-#endif  // RCUTILS__ISALNUM_NO_LOCALE_H_
+#endif // RCUTILS__ISALNUM_NO_LOCALE_H_

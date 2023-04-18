@@ -29,8 +29,7 @@
 #define RCUTILS__REPL_STR_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include "rcutils/allocator.h"
@@ -124,14 +123,75 @@ extern "C"
  * \param[in] allocator structure defining functions to be used for allocation
  * \return duplicated `str` with all matches of `from` replaced with `to`.
  */
+/// 替换给定字符串中一个字符串的所有出现。(Replace all the occurrences of one string for another in the given string.)
+/**
+ * 从源码中复制的文档，并进行了少量修改：
+ *
+ * ----
+ *
+ * **描述：**(Description:)
+ *
+ * 在字符串 `str` 中，将源字符串 `from` 的所有出现替换为目标字符串 `to`。
+ * 字符串 `from` 和 `to` 的长度可能不同。
+ * 字符串 `to` 可以是任意长度，但字符串 `from` 必须是非零长度——为 `from` 参数提供空字符串的惩罚是无限循环。
+ * 此外，这三个参数都不能为 NULL。
+ *
+ * **返回：**(Returns:)
+ *
+ * 替换后的字符串，如果无法为新字符串分配内存，则返回 NULL。
+ * 不修改原始字符串。
+ * 当不再需要返回的替换后字符串的内存时，可以使用给定分配器的 deallocate 函数释放它。
+ *
+ * **性能：**(Performance:)
+ *
+ * 如果你足够好奇并想要将此实现与其他实现进行比较，欢迎编译并运行基准测试文件中的代码，
+ * [replacebench.c](http://creativeandcritical.net/downloads/replacebench.c)。
+ * 在该文件中，上述函数被包含为 `replace_cache`，而最初在此页面上发布的函数 `replace_str2` 和
+ * `replace_str` 分别被包含为 `replace_opt2` 和 `replace_opt`。
+ * 从 comp.lang.c 线程中包含了代码/函数，
+ * [how to replace a substring in a string using C?]
+ * (https://groups.google.com/forum/#!msg/comp.lang.c/sgydS2lDgxc/v2MRxRrAQncJ)，
+ * 从 stackoverflow 问题的答案中，
+ * [What is the function to replace string in C?]
+ * (http://stackoverflow.com/questions/779875/what-is-the-function-to-replace-string-in-c)，
+ * 以及从私人通信中。
+ * 查看文件顶部的注释以获取有关编译和运行它的说明。
+ *
+ * 在大多数情况下，最快的替换函数大约快 10-20%，是 Albert Chan 的 `replace_smart`，其次是上述函数：
+ * `repl_str` 又名 `replace_cache`。
+ * 但是，在某些情况下，`repl_str` 比 `replace_smart` 更快，有时甚至快 200%。
+ * 这些情况涉及到长字符串与少量匹配。
+ * 为什么，如果 Albert 的函数通常比上面的 `repl_str` 函数稍快一些，那么它不是本页关注的重点呢？
+ * 因为它通常比 `repl_str` 使用更多的内存。
+ *
+ * 第三快的实现通常是 `replace_str2` 又名 `replace_opt2`。
+ * 对于较长的字符串，在 "from" 和 "to" 字符串长度不同的情况下，`repl_str` 又名 `replace_cache` 以最高约 80% 的优势击败它。
+ * 对于较小的字符串，在 "from" 和 "to" 字符串长度相同的情况下，`replace_str2` 又名 `replace_opt2` 更快，
+ * 最大优势约为 35%，有时在这些情况下也击败 `replace_smart`。
+ * 其他一些函数对于较小的字符串也更快。
+ * `replace_str2` 和 `repl_str` 之间的平衡点（假设 "from" 和 "to" 字符串长度不同）取决于最后一个匹配在字符串中出现的位置、匹配的数量以及旧字符串和 "to" 字符串的相对长度，但大致发生在 700-800 字节长度的字符串上。
+ *
+ * 这种分析是基于使用 [GCC](https://gcc.gnu.org/) 编译并在运行 Linux 的 64 位 Intel 平台上进行测试，但是在 Windows 7 上使用
+ * [Microsoft Visual C++ 2010 Express]
+ * (https://www.visualstudio.com/en-US/products/visual-studio-express-vs)
+ * （在该链接中向下滚动到 "Additional information"）进行简短测试似乎产生了类似的结果。
+ *
+ * ----
+ *
+ * 下面是 OSRF 添加的其他文档。
+ *
+ * 分配器不能为 NULL。
+ *
+ * \param[in] str 要在其中查找并替换子字符串的字符串。(string to have substrings found and replaced within)
+ * \param[in] from 要匹配以进行替换的字符串。(string to match for replacement)
+ * \param[in] to 用于替换匹配字符串的字符串。(string to replace matched strings with)
+ * \param[in] allocator 定义要用于分配的函数的结构。(structure defining functions to be used for allocation)
+ * \return 所有 `from` 匹配项替换为 `to` 的复制 `str`。(duplicated `str` with all matches of `from` replaced with `to`.)
+ */
 RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
-char *
-rcutils_repl_str(
-  const char * str,
-  const char * from,
-  const char * to,
-  const rcutils_allocator_t * allocator);
+char * rcutils_repl_str(
+  const char * str, const char * from, const char * to, const rcutils_allocator_t * allocator);
 
 // Implementation copied from above mentioned source continues in repl_str.c.
 
@@ -139,4 +199,4 @@ rcutils_repl_str(
 }
 #endif
 
-#endif  // RCUTILS__REPL_STR_H_
+#endif // RCUTILS__REPL_STR_H_

@@ -18,8 +18,7 @@
 #define RCUTILS__TYPES__RCUTILS_RET_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /// The type that holds a return value for an rcutils operation.
@@ -58,9 +57,8 @@ typedef int rcutils_ret_t;
 /// There are no more entires beyond the last one in the map
 #define RCUTILS_RET_HASH_MAP_NO_MORE_ENTRIES 50
 
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // RCUTILS__TYPES__RCUTILS_RET_H_
+#endif // RCUTILS__TYPES__RCUTILS_RET_H_

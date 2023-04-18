@@ -16,8 +16,8 @@
 
 #include "rcutils/cmdline_parser.h"
 
-
-TEST(CmdLineParser, cli_option_exist) {
+TEST(CmdLineParser, cli_option_exist)
+{
   char const * args[] = {"option1", "option2", "option3"};
   const int args_count = sizeof(args) / sizeof(char *);
   char ** arr = const_cast<char **>(args);
@@ -29,7 +29,8 @@ TEST(CmdLineParser, cli_option_exist) {
   EXPECT_FALSE(rcutils_cli_option_exist(arr, arr + args_count, "NotRelated"));
 }
 
-TEST(CmdLineParser, cli_get_option) {
+TEST(CmdLineParser, cli_get_option)
+{
   char const * args[] = {"option1", "sub1", "option2"};
   const int args_count = sizeof(args) / sizeof(char *);
   char ** arr = const_cast<char **>(args);

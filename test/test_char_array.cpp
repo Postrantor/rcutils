@@ -39,9 +39,7 @@ protected:
   rcutils_char_array_t char_array;
 };
 
-static rcutils_ret_t example_logger(
-  rcutils_char_array_t * char_array,
-  const char * format, ...)
+static rcutils_ret_t example_logger(rcutils_char_array_t * char_array, const char * format, ...)
 {
   rcutils_ret_t status;
   va_list args;
@@ -51,7 +49,8 @@ static rcutils_ret_t example_logger(
   return status;
 }
 
-TEST_F(ArrayCharTest, default_initialization) {
+TEST_F(ArrayCharTest, default_initialization)
+{
   EXPECT_EQ(RCUTILS_RET_OK, rcutils_char_array_init(&char_array, 0, &allocator));
   EXPECT_EQ(0lu, char_array.buffer_capacity);
   EXPECT_EQ(RCUTILS_RET_OK, rcutils_char_array_fini(&char_array));
@@ -59,12 +58,13 @@ TEST_F(ArrayCharTest, default_initialization) {
   EXPECT_FALSE(char_array.buffer);
 }
 
-TEST_F(ArrayCharTest, resize) {
+TEST_F(ArrayCharTest, resize)
+{
   rcutils_ret_t ret = rcutils_char_array_init(&char_array, 5, &allocator);
   ASSERT_EQ(RCUTILS_RET_OK, ret);
 
-  char_array.buffer_length = static_cast<std::size_t>(
-    snprintf(char_array.buffer, char_array.buffer_capacity, "1234") + 1);
+  char_array.buffer_length =
+    static_cast<std::size_t>(snprintf(char_array.buffer, char_array.buffer_capacity, "1234") + 1);
   EXPECT_STREQ("1234", char_array.buffer);
 
   ret = rcutils_char_array_resize(&char_array, 0);
@@ -118,7 +118,8 @@ TEST_F(ArrayCharTest, resize) {
   EXPECT_EQ(RCUTILS_RET_OK, rcutils_char_array_fini(&char_array));
 }
 
-TEST_F(ArrayCharTest, vsprintf_fail) {
+TEST_F(ArrayCharTest, vsprintf_fail)
+{
   rcutils_allocator_t failing_allocator = get_failing_allocator();
   rcutils_ret_t ret = rcutils_char_array_init(&char_array, 10, &allocator);
   ASSERT_EQ(RCUTILS_RET_OK, ret);
@@ -132,7 +133,8 @@ TEST_F(ArrayCharTest, vsprintf_fail) {
   EXPECT_EQ(RCUTILS_RET_OK, rcutils_char_array_fini(&char_array));
 }
 
-TEST_F(ArrayCharTest, strcpy) {
+TEST_F(ArrayCharTest, strcpy)
+{
   rcutils_allocator_t failing_allocator = get_failing_allocator();
   rcutils_ret_t ret = rcutils_char_array_init(&char_array, 8, &allocator);
   ASSERT_EQ(RCUTILS_RET_OK, ret);
@@ -149,7 +151,8 @@ TEST_F(ArrayCharTest, strcpy) {
   EXPECT_EQ(RCUTILS_RET_OK, rcutils_char_array_fini(&char_array));
 }
 
-TEST_F(ArrayCharTest, strcat) {
+TEST_F(ArrayCharTest, strcat)
+{
   rcutils_allocator_t failing_allocator = get_failing_allocator();
   rcutils_ret_t ret = rcutils_char_array_init(&char_array, 8, &allocator);
   ASSERT_EQ(RCUTILS_RET_OK, ret);

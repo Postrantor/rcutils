@@ -19,7 +19,8 @@
 #include "rcutils/env.h"
 #include "rcutils/error_handling.h"
 
-TEST(TestEnv, test_set_env) {
+TEST(TestEnv, test_set_env)
+{
   const char * res = nullptr;
 
   // Invalid cases
@@ -64,7 +65,8 @@ TEST(TestEnv, test_set_env) {
  *
  * These are set in the call to `ament_add_gtest()` in the `CMakeLists.txt`.
  */
-TEST(TestEnv, test_get_env) {
+TEST(TestEnv, test_get_env)
+{
   const char * env;
   const char * ret;
   ret = rcutils_get_env("NORMAL_TEST", NULL);
@@ -84,7 +86,8 @@ TEST(TestEnv, test_get_env) {
   EXPECT_STREQ("", env);
 }
 
-TEST(TestEnv, test_get_home) {
+TEST(TestEnv, test_get_home)
+{
   EXPECT_STRNE(NULL, rcutils_get_home_dir());
   const char * home = NULL;
 

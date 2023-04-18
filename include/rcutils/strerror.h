@@ -18,31 +18,36 @@
 #define RCUTILS__STRERROR_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include "rcutils/visibility_control.h"
 
+/// 获取与上一个系统错误对应的字符串。
 /// Retrieve the string corresponding to the last system error.
 /**
+ * 此函数检索 errno 的值，并在其上调用系统特定的 `strerror` 等效项，
+ * 将输出存储在提供的缓冲区中。如果错误消息长于缓冲区，它将被截断。
+ * 传入的 c-string 缓冲区的内存必须由调用者管理。
  * This function retrieves the value of errno, and calls the system-specific
  * equivalent of `strerror` on it, storing the output in the provided buffer.
  * If the error message is longer than the buffer, it will be truncated.
  * The memory for the c-string buffer that is passed in must be managed by the
  * caller.
  *
+ * 此功能是线程安全的。
  * This function is thread-safe.
  *
+ * \param[inout] buffer 存储数据的缓冲区
  * \param[inout] buffer The buffer in which to store the data
+ * \param[in] buffer_length 缓冲区的最大长度
  * \param[in] buffer_length the maximum length of the buffer
  */
 RCUTILS_PUBLIC
-void
-rcutils_strerror(char * buffer, size_t buffer_length);
+void rcutils_strerror(char * buffer, size_t buffer_length);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // RCUTILS__STRERROR_H_
+#endif // RCUTILS__STRERROR_H_

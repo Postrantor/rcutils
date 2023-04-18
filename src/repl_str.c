@@ -26,13 +26,12 @@
 // Note: the "tuning" values at the beginning of the function have been left as-is.
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-#include <string.h>
-#include <stdlib.h>
 #include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 
 #if (__STDC_VERSION__ >= 199901L)
 #include <stdint.h>
@@ -40,41 +39,43 @@ extern "C"
 
 #include "rcutils/repl_str.h"
 
-// *INDENT-OFF* (prevent uncrustify from messing with the original style)
-
-char *
-rcutils_repl_str(
-  const char * str,
-  const char * from,
-  const char * to,
-  const rcutils_allocator_t * allocator)
+/**
+ * @brief 用指定的字符串替换源字符串中的所有匹配项（Replace all occurrences of a substring in a string with another substring）
+ *
+ * @param[in] str 原始字符串（The original string）
+ * @param[in] from 要替换的子串（The substring to be replaced）
+ * @param[in] to 用于替换的子串（The substring used for replacement）
+ * @param[in] allocator 分配器（Allocator for memory management）
+ * @return char* 替换后的新字符串（New string after replacement）
+ */
+char * rcutils_repl_str(
+  const char * str, const char * from, const char * to, const rcutils_allocator_t * allocator)
 {
-  /* Adjust each of the below values to suit your needs. */
+  /* 调整下面的值以满足需求（Adjust each of the below values to suit your needs）. */
 
-  /* Increment positions cache size initially by this number. */
+  /* 初始缓存大小增量（Increment positions cache size initially by this number）. */
   size_t cache_sz_inc = 16;
-  /* Thereafter, each time capacity needs to be increased,
-   * multiply the increment by this factor. */
+  /* 此后，每次需要增加容量时，将增量乘以此因子（Thereafter, each time capacity needs to be increased, multiply the increment by this factor）. */
   const size_t cache_sz_inc_factor = 3;
-  /* But never increment capacity by more than this number. */
+  /* 但永远不要将容量增加超过这个数值（But never increment capacity by more than this number）. */
   const size_t cache_sz_inc_max = 1048576;
 
   char *pret, *ret = NULL;
   const char *pstr2, *pstr = str;
   size_t i, count = 0;
-  #if (__STDC_VERSION__ >= 199901L)
+#if (__STDC_VERSION__ >= 199901L)
   uintptr_t *pos_cache_tmp, *pos_cache = NULL;
-  #else
+#else
   ptrdiff_t *pos_cache_tmp, *pos_cache = NULL;
-  #endif
+#endif
   size_t cache_sz = 0;
   size_t cpylen, orglen, retlen, tolen, fromlen = strlen(from);
 
-  /* Find all matches and cache their positions. */
+  /* 查找所有匹配并缓存它们的位置（Find all matches and cache their positions）. */
   while ((pstr2 = strstr(pstr, from)) != NULL) {
     count++;
 
-    /* Increase the cache size when necessary. */
+    /* 必要时增加缓存大小（Increase the cache size when necessary）. */
     if (cache_sz < count) {
       cache_sz += cache_sz_inc;
       pos_cache_tmp =
@@ -90,13 +91,13 @@ rcutils_repl_str(
       }
     }
 
-    pos_cache[count-1] = (size_t)(pstr2 - str);
+    pos_cache[count - 1] = (size_t)(pstr2 - str);
     pstr = pstr2 + fromlen;
   }
 
   orglen = (size_t)(pstr - str) + strlen(pstr);
 
-  /* Allocate memory for the post-replacement string. */
+  /* 为替换后的字符串分配内存（Allocate memory for the post-replacement string）. */
   if (count > 0) {
     tolen = strlen(to);
     retlen = orglen + (tolen - fromlen) * count;
@@ -109,18 +110,17 @@ rcutils_repl_str(
   }
 
   if (count == 0) {
-    /* If no matches, then just duplicate the string. */
+    /* 如果没有匹配项，那么只需复制字符串（If no matches, then just duplicate the string）. */
 #if defined(_MSC_VER)
-# pragma warning(push)
-# pragma warning(disable: 4996)  // strcpy may be unsafe
+#pragma warning(push)
+#pragma warning(disable : 4996) // strcpy may be unsafe
 #endif
-    strcpy(ret, str);  // NOLINT
+    strcpy(ret, str); // NOLINT
 #if defined(_MSC_VER)
-# pragma warning(pop)
+#pragma warning(pop)
 #endif
   } else {
-    /* Otherwise, duplicate the string whilst performing
-     * the replacements using the position cache. */
+    /* 否则，在执行替换时使用位置缓存复制字符串（Otherwise, duplicate the string whilst performing the replacements using the position cache）. */
     pret = ret;
     memcpy(pret, str, pos_cache[0]);
     pret += pos_cache[0];
@@ -128,7 +128,7 @@ rcutils_repl_str(
       memcpy(pret, to, tolen);
       pret += tolen;
       pstr = str + pos_cache[i] + fromlen;
-      cpylen = (i == count-1 ? orglen : pos_cache[i+1]) - pos_cache[i] - fromlen;
+      cpylen = (i == count - 1 ? orglen : pos_cache[i + 1]) - pos_cache[i] - fromlen;
       memcpy(pret, pstr, cpylen);
       pret += cpylen;
     }
@@ -136,8 +136,7 @@ rcutils_repl_str(
   }
 
 end_repl_str:
-  /* Free the cache and return the post-replacement string,
-   * which will be NULL in the event of an error. */
+  /* 释放缓存并返回替换后的字符串，如果发生错误，则返回NULL（Free the cache and return the post-replacement string, which will be NULL in the event of an error）. */
   allocator->deallocate(pos_cache, allocator->state);
   return ret;
 }

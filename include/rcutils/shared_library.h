@@ -18,149 +18,134 @@
 #define RCUTILS__SHARED_LIBRARY_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include <string.h>
 
 #include "rcutils/allocator.h"
-#include "rcutils/types/rcutils_ret.h"
 #include "rcutils/macros.h"
+#include "rcutils/types/rcutils_ret.h"
 #include "rcutils/visibility_control.h"
 
-/// Handle to a loaded shared library.
+/// 处理已加载的共享库的句柄。 (Handle to a loaded shared library.)
 typedef struct RCUTILS_PUBLIC_TYPE rcutils_shared_library_s
 {
-  /// The platform-specific pointer to the shared library
+  /// 平台特定的指向共享库的指针 (The platform-specific pointer to the shared library)
   void * lib_pointer;
-  /// The path of the shared_library
+  /// 共享库的路径 (The path of the shared_library)
   char * library_path;
-  /// allocator
+  /// 分配器 (allocator)
   rcutils_allocator_t allocator;
 } rcutils_shared_library_t;
 
-/// Return an empty shared library struct.
+/// 返回一个空的共享库结构体。 (Return an empty shared library struct.)
 /**
- * This function returns an empty and zero initialized shared library struct.
+ * 此函数返回一个空的和零初始化的共享库结构体。 (This function returns an empty and zero initialized shared library struct.)
  *
- * Example:
+ * 示例：(Example:)
  *
  * ```c
- * // Do not do this:
+ * // 不要这样做：(Do not do this:)
  * // rcutils_shared_library_t foo;
  * // rcutils_ret_t ret = rcutils_load_shared_library(
  * //     &foo,
  * //    "library_name",
- * //    rcutils_get_default_allocator()); // undefined behavior!
- * // or
- * // rcutils_ret_t ret = rcutils_unload_shared_library(&foo); // undefined behavior!
+ * //    rcutils_get_default_allocator()); // 未定义行为！(undefined behavior!)
+ * // 或者 (or)
+ * // rcutils_ret_t ret = rcutils_unload_shared_library(&foo); // 未定义行为！(undefined behavior!)
  *
- * // Do this instead:
+ * // 而要这样做：(Do this instead:)
  * rcutils_shared_library_t bar = rcutils_get_zero_initialized_shared_library();
  * rcutils_load_shared_library(&bar, "library_name", rcutils_get_default_allocator()); // ok
  * void * symbol = rcutils_get_symbol(&bar, "bazinga"); // ok
  * bool is_bazinga_symbol = rcutils_has_symbol(&bar, "bazinga"); // ok
  * rcutils_ret_t ret = rcutils_unload_shared_library(&bar); // ok
  * if (ret != RCUTILS_RET_ERROR) {
- *   // error handling
+ *   // 错误处理 (error handling)
  * }
  * ```
  * */
 RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
-rcutils_shared_library_t
-rcutils_get_zero_initialized_shared_library(void);
+rcutils_shared_library_t rcutils_get_zero_initialized_shared_library(void);
 
-/// Return shared library pointer.
+/// 返回共享库指针。 (Return shared library pointer.)
 /**
- * \param[inout] lib struct with the shared library pointer and shared library path name
- * \param[in] library_path string with the path of the library
- * \param[in] allocator to be used to allocate and deallocate memory
- * \return #RCUTILS_RET_OK if successful, or
- * \return #RCUTILS_RET_BAD_ALLOC if memory allocation fails, or
- * \return #RCUTILS_RET_ERROR if an unknown error occurs, or
- * \return #RCUTILS_RET_INVALID_ARGUMENT for invalid arguments.
+ * \param[inout] lib 具有共享库指针和共享库路径名的结构体 (struct with the shared library pointer and shared library path name)
+ * \param[in] library_path 库路径字符串 (string with the path of the library)
+ * \param[in] allocator 用于分配和释放内存的分配器 (allocator to be used to allocate and deallocate memory)
+ * \return #RCUTILS_RET_OK 如果成功 (if successful), 或者 (or)
+ * \return #RCUTILS_RET_BAD_ALLOC 如果内存分配失败 (if memory allocation fails), 或者 (or)
+ * \return #RCUTILS_RET_ERROR 如果发生未知错误 (if an unknown error occurs), 或者 (or)
+ * \return #RCUTILS_RET_INVALID_ARGUMENT 对于无效参数 (for invalid arguments).
  */
 RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
-rcutils_ret_t
-rcutils_load_shared_library(
-  rcutils_shared_library_t * lib,
-  const char * library_path,
-  rcutils_allocator_t allocator);
+rcutils_ret_t rcutils_load_shared_library(
+  rcutils_shared_library_t * lib, const char * library_path, rcutils_allocator_t allocator);
 
-/// Return shared library symbol pointer.
+/// 返回共享库符号指针。 (Return shared library symbol pointer.)
 /**
- * \param[in] lib struct with the shared library pointer and shared library path name
- * \param[in] symbol_name name of the symbol inside the shared library
- * \return shared library symbol pointer, or
- * \return `NULL` if the symbol doesn't exist.
+ * \param[in] lib 具有共享库指针和共享库路径名的结构体 (struct with the shared library pointer and shared library path name)
+ * \param[in] symbol_name 共享库内的符号名 (name of the symbol inside the shared library)
+ * \return 共享库符号指针 (shared library symbol pointer), 或者 (or)
+ * \return `NULL` 如果符号不存在 (if the symbol doesn't exist).
  */
 RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
-void *
-rcutils_get_symbol(const rcutils_shared_library_t * lib, const char * symbol_name);
+void * rcutils_get_symbol(const rcutils_shared_library_t * lib, const char * symbol_name);
 
-/// Return true if the shared library contains a specific symbol name otherwise returns false.
+/// 如果共享库包含特定符号名，则返回true，否则返回false。 (Return true if the shared library contains a specific symbol name otherwise returns false.)
 /**
- * \param[in] lib struct with the shared library pointer and shared library path name
- * \param[in] symbol_name name of the symbol inside the shared library
- * \return `true` if the symbol exists, or
- * \return `false` otherwise.
+ * \param[in] lib 具有共享库指针和共享库路径名的结构体 (struct with the shared library pointer and shared library path name)
+ * \param[in] symbol_name 共享库内的符号名 (name of the symbol inside the shared library)
+ * \return `true` 如果符号存在 (if the symbol exists), 或者 (or)
+ * \return `false` 否则 (otherwise).
  */
 RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
-bool
-rcutils_has_symbol(const rcutils_shared_library_t * lib, const char * symbol_name);
+bool rcutils_has_symbol(const rcutils_shared_library_t * lib, const char * symbol_name);
 
-/// Unload the shared library.
+/// 卸载共享库。 (Unload the shared library.)
 /**
- * \param[in] lib rcutils_shared_library_t to be finalized
- * \return #RCUTILS_RET_OK if successful, or
- * \return #RCUTILS_RET_INVALID_ARGUMENT for invalid arguments, or
- * \return #RCUTILS_RET_ERROR if an unknown error occurs
+ * \param[in] lib 要完成的 rcutils_shared_library_t (rcutils_shared_library_t to be finalized)
+ * \return #RCUTILS_RET_OK 如果成功 (if successful), 或者 (or)
+ * \return #RCUTILS_RET_INVALID_ARGUMENT 对于无效参数 (for invalid arguments), 或者 (or)
+ * \return #RCUTILS_RET_ERROR 如果发生未知错误 (if an unknown error occurs)
  */
 RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
-rcutils_ret_t
-rcutils_unload_shared_library(rcutils_shared_library_t * lib);
+rcutils_ret_t rcutils_unload_shared_library(rcutils_shared_library_t * lib);
 
-/// Check if the library is loaded.
+/// 检查库是否已加载。 (Check if the library is loaded.)
 /**
- * This function only determines if "unload" has been called on the current shared library handle.
- * It could very well be that a second shared library handle is still open and therefore the library
- * being loaded.
- * \param[in] lib rcutils_shared_library_t  to check
- * \return `true` if library is loaded, or
- * \return `false` otherwise.
+ * 此函数仅确定当前共享库句柄上是否已调用“卸载”。 (This function only determines if "unload" has been called on the current shared library handle.)
+ * 它很可能是第二个共享库句柄仍然打开，因此库被加载。 (It could very well be that a second shared library handle is still open and therefore the library being loaded.)
+ * \param[in] lib 要检查的 rcutils_shared_library_t (rcutils_shared_library_t  to check)
+ * \return `true` 如果库已加载 (if library is loaded), 或者 (or)
+ * \return `false` 否则 (otherwise).
  */
 RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
-bool
-rcutils_is_shared_library_loaded(rcutils_shared_library_t * lib);
+bool rcutils_is_shared_library_loaded(rcutils_shared_library_t * lib);
 
-/// Get the library name for the compiled platform
+/// 获取编译平台的库名称 (Get the library name for the compiled platform)
 /**
- * \param[in] library_name library base name (without prefix and extension)
- * \param[out] library_name_platform library name for the compiled platform
- * \param[in] buffer_size size of library_name_platform buffer
- * \param[in] debug if true the library will return a debug library name, otherwise
- * it returns a normal library path
- * \return #RCUTILS_RET_OK if successful, or
- * \return #RCUTILS_RET_ERROR if an unknown error occurs
+ * \param[in] library_name 库基本名称（不带前缀和扩展名） (library base name (without prefix and extension))
+ * \param[out] library_name_platform 编译平台的库名称 (library name for the compiled platform)
+ * \param[in] buffer_size library_name_platform 缓冲区大小 (size of library_name_platform buffer)
+ * \param[in] debug 如果为真，则库将返回调试库名称，否则返回正常库路径 (if true the library will return a debug library name, otherwise it returns a normal library path)
+ * \return #RCUTILS_RET_OK 如果成功 (if successful), 或者 (or)
+ * \return #RCUTILS_RET_ERROR 如果发生未知错误 (if an unknown error occurs)
  */
 RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
-rcutils_ret_t
-rcutils_get_platform_library_name(
-  const char * library_name,
-  char * library_name_platform,
-  unsigned int buffer_size,
-  bool debug);
+rcutils_ret_t rcutils_get_platform_library_name(
+  const char * library_name, char * library_name_platform, unsigned int buffer_size, bool debug);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // RCUTILS__SHARED_LIBRARY_H_
+#endif // RCUTILS__SHARED_LIBRARY_H_

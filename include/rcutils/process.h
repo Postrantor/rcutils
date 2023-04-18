@@ -18,37 +18,35 @@
 #define RCUTILS__PROCESS_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include "rcutils/allocator.h"
 #include "rcutils/macros.h"
 #include "rcutils/visibility_control.h"
 
-/// Retrieve the current process ID.
+/// 获取当前进程ID。 (Retrieve the current process ID.)
 /**
- * This function returns the current process ID, and is always successful.
+ * 此函数返回当前进程ID，始终成功。 (This function returns the current process ID, and is always successful.)
  *
- * This function is thread-safe.
+ * 此功能是线程安全的。 (This function is thread-safe.)
  *
- * \return The current process ID.
+ * \return 当前进程ID。 (The current process ID.)
  */
 RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
 int rcutils_get_pid(void);
 
-/// Retrieve the current executable name.
+/// 获取当前可执行文件名。 (Retrieve the current executable name.)
 /**
- * This function portably retrieves the current program name and returns
- * a copy of it.
- * It is up to the caller to free the memory.
+ * 该函数以可移植的方式检索当前程序名称并返回其副本。 (This function portably retrieves the current program name and returns a copy of it.)
+ * 调用者需要释放内存。 (It is up to the caller to free the memory.)
  *
- * This function is thread-safe.
+ * 此功能是线程安全的。 (This function is thread-safe.)
  *
- * \param[in] allocator the allocator to use
- * \return The program name on success, or
- * \return NULL on failure.
+ * \param[in] allocator 要使用的分配器 (the allocator to use)
+ * \return 成功时的程序名称，或 (The program name on success, or)
+ * \return 失败时返回NULL。 (NULL on failure.)
  */
 RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
@@ -58,4 +56,4 @@ char * rcutils_get_executable_name(rcutils_allocator_t allocator);
 }
 #endif
 
-#endif  // RCUTILS__PROCESS_H_
+#endif // RCUTILS__PROCESS_H_

@@ -62,41 +62,48 @@ protected:
   }
 };
 
-TEST_F(ArrayListTest, init_list_null_fails) {
+TEST_F(ArrayListTest, init_list_null_fails)
+{
   rcutils_ret_t ret = rcutils_array_list_init(NULL, 2, sizeof(uint32_t), &allocator);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, init_initial_capacity_zero_fails) {
+TEST_F(ArrayListTest, init_initial_capacity_zero_fails)
+{
   rcutils_ret_t ret = rcutils_array_list_init(&list, 0, sizeof(uint32_t), &allocator);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, init_data_size_zero_fails) {
+TEST_F(ArrayListTest, init_data_size_zero_fails)
+{
   rcutils_ret_t ret = rcutils_array_list_init(&list, 2, 0, &allocator);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, init_null_allocator_fails) {
+TEST_F(ArrayListTest, init_null_allocator_fails)
+{
   rcutils_ret_t ret = rcutils_array_list_init(&list, 2, sizeof(uint32_t), NULL);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, fail_allocate_impl) {
+TEST_F(ArrayListTest, fail_allocate_impl)
+{
   rcutils_allocator_t time_bomb_allocator = get_time_bomb_allocator();
   set_time_bomb_allocator_malloc_count(time_bomb_allocator, 0);
   rcutils_ret_t ret = rcutils_array_list_init(&list, 2, sizeof(uint32_t), &time_bomb_allocator);
   EXPECT_EQ(RCUTILS_RET_BAD_ALLOC, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, fail_allocate_impl_list) {
+TEST_F(ArrayListTest, fail_allocate_impl_list)
+{
   rcutils_allocator_t time_bomb_allocator = get_time_bomb_allocator();
   set_time_bomb_allocator_malloc_count(time_bomb_allocator, 1);
   rcutils_ret_t ret = rcutils_array_list_init(&list, 2, sizeof(uint32_t), &time_bomb_allocator);
   EXPECT_EQ(RCUTILS_RET_BAD_ALLOC, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, init_success) {
+TEST_F(ArrayListTest, init_success)
+{
   rcutils_ret_t ret = rcutils_array_list_init(&list, 2, sizeof(uint32_t), &allocator);
   EXPECT_EQ(RCUTILS_RET_OK, ret) << rcutils_get_error_string().str;
 
@@ -104,17 +111,20 @@ TEST_F(ArrayListTest, init_success) {
   EXPECT_EQ(RCUTILS_RET_OK, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, fini_list_null) {
+TEST_F(ArrayListTest, fini_list_null)
+{
   rcutils_ret_t ret = rcutils_array_list_fini(NULL);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, fini_list_not_initialized) {
+TEST_F(ArrayListTest, fini_list_not_initialized)
+{
   rcutils_ret_t ret = rcutils_array_list_fini(&list);
   EXPECT_EQ(RCUTILS_RET_NOT_INITIALIZED, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, fini_success) {
+TEST_F(ArrayListTest, fini_success)
+{
   rcutils_ret_t ret;
 
   ret = rcutils_array_list_init(&list, 2, sizeof(uint32_t), &allocator);
@@ -124,44 +134,51 @@ TEST_F(ArrayListTest, fini_success) {
   EXPECT_EQ(RCUTILS_RET_OK, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, add_list_null_fails) {
+TEST_F(ArrayListTest, add_list_null_fails)
+{
   uint32_t data = 22;
   rcutils_ret_t ret = rcutils_array_list_add(NULL, &data);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, add_list_not_initialized_fails) {
+TEST_F(ArrayListTest, add_list_not_initialized_fails)
+{
   uint32_t data = 22;
   rcutils_ret_t ret = rcutils_array_list_add(&list, &data);
   EXPECT_EQ(RCUTILS_RET_NOT_INITIALIZED, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, add_data_null_fails) {
+TEST_F(ArrayListPreInitTest, add_data_null_fails)
+{
   rcutils_ret_t ret = rcutils_array_list_add(&list, NULL);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, add_success) {
+TEST_F(ArrayListPreInitTest, add_success)
+{
   uint32_t data = 22;
   rcutils_ret_t ret = rcutils_array_list_add(&list, &data);
   EXPECT_EQ(RCUTILS_RET_OK, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, set_list_null_fails) {
+TEST_F(ArrayListTest, set_list_null_fails)
+{
   uint32_t data = 22;
   size_t index = 0;
   rcutils_ret_t ret = rcutils_array_list_set(NULL, index, &data);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, set_list_not_initialized_fails) {
+TEST_F(ArrayListTest, set_list_not_initialized_fails)
+{
   uint32_t data = 22;
   size_t index = 0;
   rcutils_ret_t ret = rcutils_array_list_set(&list, index, &data);
   EXPECT_EQ(RCUTILS_RET_NOT_INITIALIZED, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, set_data_null_fails) {
+TEST_F(ArrayListPreInitTest, set_data_null_fails)
+{
   uint32_t data = 22;
   size_t index = 0;
 
@@ -173,7 +190,8 @@ TEST_F(ArrayListPreInitTest, set_data_null_fails) {
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, set_data_index_oob_fails) {
+TEST_F(ArrayListPreInitTest, set_data_index_oob_fails)
+{
   uint32_t data = 22;
   size_t index = 1;
 
@@ -185,7 +203,8 @@ TEST_F(ArrayListPreInitTest, set_data_index_oob_fails) {
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, set_success_changes_data) {
+TEST_F(ArrayListPreInitTest, set_success_changes_data)
+{
   uint32_t data = 22;
   uint32_t ret_data = 0;
   size_t index = 0;
@@ -203,19 +222,22 @@ TEST_F(ArrayListPreInitTest, set_success_changes_data) {
   EXPECT_EQ(data, ret_data);
 }
 
-TEST_F(ArrayListTest, remove_list_null_fails) {
+TEST_F(ArrayListTest, remove_list_null_fails)
+{
   size_t index = 0;
   rcutils_ret_t ret = rcutils_array_list_remove(NULL, index);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, remove_list_not_initialized_fails) {
+TEST_F(ArrayListTest, remove_list_not_initialized_fails)
+{
   size_t index = 0;
   rcutils_ret_t ret = rcutils_array_list_remove(&list, index);
   EXPECT_EQ(RCUTILS_RET_NOT_INITIALIZED, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, remove_data_index_oob_fails) {
+TEST_F(ArrayListPreInitTest, remove_data_index_oob_fails)
+{
   uint32_t data = 22;
   size_t index = 1;
 
@@ -227,7 +249,8 @@ TEST_F(ArrayListPreInitTest, remove_data_index_oob_fails) {
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, remove_success_removes_from_list) {
+TEST_F(ArrayListPreInitTest, remove_success_removes_from_list)
+{
   uint32_t data = 22;
   size_t index = 0;
   size_t size = 0;
@@ -248,21 +271,24 @@ TEST_F(ArrayListPreInitTest, remove_success_removes_from_list) {
   EXPECT_EQ(size, (size_t)0);
 }
 
-TEST_F(ArrayListTest, get_list_null_fails) {
+TEST_F(ArrayListTest, get_list_null_fails)
+{
   size_t index = 0;
   uint32_t data = 0;
   rcutils_ret_t ret = rcutils_array_list_get(NULL, index, &data);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, get_list_not_initialized_fails) {
+TEST_F(ArrayListTest, get_list_not_initialized_fails)
+{
   size_t index = 0;
   uint32_t data = 0;
   rcutils_ret_t ret = rcutils_array_list_get(&list, index, &data);
   EXPECT_EQ(RCUTILS_RET_NOT_INITIALIZED, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, get_data_index_oob_fails) {
+TEST_F(ArrayListPreInitTest, get_data_index_oob_fails)
+{
   uint32_t data = 22;
   uint32_t ret_data = 0;
   size_t index = 1;
@@ -275,7 +301,8 @@ TEST_F(ArrayListPreInitTest, get_data_index_oob_fails) {
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, get_data_success_returns_data) {
+TEST_F(ArrayListPreInitTest, get_data_success_returns_data)
+{
   uint32_t data = 22;
   uint32_t ret_data = 0;
   size_t index = 0;
@@ -288,24 +315,28 @@ TEST_F(ArrayListPreInitTest, get_data_success_returns_data) {
   EXPECT_EQ(data, ret_data);
 }
 
-TEST_F(ArrayListTest, get_size_list_null_fails) {
+TEST_F(ArrayListTest, get_size_list_null_fails)
+{
   size_t size = 0;
   rcutils_ret_t ret = rcutils_array_list_get_size(NULL, &size);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListTest, get_size_list_not_initialized_fails) {
+TEST_F(ArrayListTest, get_size_list_not_initialized_fails)
+{
   size_t size = 0;
   rcutils_ret_t ret = rcutils_array_list_get_size(&list, &size);
   EXPECT_EQ(RCUTILS_RET_NOT_INITIALIZED, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, get_size_size_null_fails) {
+TEST_F(ArrayListPreInitTest, get_size_size_null_fails)
+{
   rcutils_ret_t ret = rcutils_array_list_get_size(&list, NULL);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, get_size_increases_with_add) {
+TEST_F(ArrayListPreInitTest, get_size_increases_with_add)
+{
   size_t size = 0;
   uint32_t data = 22;
   rcutils_ret_t ret;
@@ -323,7 +354,8 @@ TEST_F(ArrayListPreInitTest, get_size_increases_with_add) {
 }
 
 // Don't let this one extend from ArrayListPreInitTest so we can control the initial cap
-TEST_F(ArrayListTest, add_grow_capacity) {
+TEST_F(ArrayListTest, add_grow_capacity)
+{
   rcutils_ret_t ret = rcutils_array_list_init(&list, 2, sizeof(uint32_t), &allocator);
   EXPECT_EQ(RCUTILS_RET_OK, ret) << rcutils_get_error_string().str;
 
@@ -345,7 +377,8 @@ TEST_F(ArrayListTest, add_grow_capacity) {
   EXPECT_EQ(RCUTILS_RET_OK, ret) << rcutils_get_error_string().str;
 }
 
-TEST_F(ArrayListPreInitTest, remove_preserves_data_around_it) {
+TEST_F(ArrayListPreInitTest, remove_preserves_data_around_it)
+{
   rcutils_ret_t ret;
   size_t size = 0;
   uint32_t ret_data = 0;
@@ -412,7 +445,8 @@ TEST_F(ArrayListPreInitTest, remove_preserves_data_around_it) {
   EXPECT_EQ(size, (size_t)0);
 }
 
-TEST_F(ArrayListPreInitTest, init_list_twice_fails) {
+TEST_F(ArrayListPreInitTest, init_list_twice_fails)
+{
   rcutils_ret_t ret = rcutils_array_list_init(&list, 2, sizeof(uint32_t), &allocator);
   EXPECT_EQ(RCUTILS_RET_INVALID_ARGUMENT, ret) << rcutils_get_error_string().str;
 }
@@ -422,7 +456,8 @@ typedef struct allocator_state
   bool is_failing;
 } allocator_state;
 
-TEST_F(ArrayListTest, list_add_bad_allocator_fails) {
+TEST_F(ArrayListTest, list_add_bad_allocator_fails)
+{
   allocator_state state;
   uint32_t data = 22;
   state.is_failing = false;

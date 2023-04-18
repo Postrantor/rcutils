@@ -18,8 +18,7 @@
 #define RCUTILS__MACROS_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #ifndef _WIN32
@@ -34,34 +33,34 @@ extern "C"
 // This block either sets RCUTILS_THREAD_LOCAL or RCUTILS_THREAD_LOCAL_PTHREAD.
 #if defined _WIN32 || defined __CYGWIN__
 // Windows or Cygwin
-  #define RCUTILS_THREAD_LOCAL __declspec(thread)
+#define RCUTILS_THREAD_LOCAL __declspec(thread)
 #elif defined __APPLE__
 // Apple OS's
-  #include <TargetConditionals.h>
-  #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
+#include <TargetConditionals.h>
+#if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
 // iOS Simulator or iOS device
-    #include <Availability.h>
-    #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
+#include <Availability.h>
+#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
 // iOS >= 10, thread local storage was added in iOS 10
-        #define RCUTILS_THREAD_LOCAL _Thread_local
-      #else
+#define RCUTILS_THREAD_LOCAL _Thread_local
+#else
 // iOS < 10, no thread local storage, so use pthread instead
-        #define RCUTILS_THREAD_LOCAL_PTHREAD 1
-        #undef RCUTILS_THREAD_LOCAL
-      #endif
-    #else
-      #error "Unknown iOS version"
-    #endif
-  #elif TARGET_OS_MAC
+#define RCUTILS_THREAD_LOCAL_PTHREAD 1
+#undef RCUTILS_THREAD_LOCAL
+#endif
+#else
+#error "Unknown iOS version"
+#endif
+#elif TARGET_OS_MAC
 // macOS
-    #define RCUTILS_THREAD_LOCAL _Thread_local
-  #else
-    #error "Unknown Apple platform"
-  #endif
+#define RCUTILS_THREAD_LOCAL _Thread_local
+#else
+#error "Unknown Apple platform"
+#endif
 #else
 // Some other non-Windows, non-cygwin, non-apple OS
-  #define RCUTILS_THREAD_LOCAL _Thread_local
+#define RCUTILS_THREAD_LOCAL _Thread_local
 #endif
 
 // Helper macros for nested macro expansion
@@ -72,7 +71,7 @@ extern "C"
 /// A macro to mark an argument or variable as unused.
 #define RCUTILS_UNUSED(x) (void)(x)
 
-#define RCUTILS_JOIN_IMPL(arg1, arg2) arg1 ## arg2
+#define RCUTILS_JOIN_IMPL(arg1, arg2) arg1##arg2
 #define RCUTILS_JOIN(arg1, arg2) RCUTILS_JOIN_IMPL(arg1, arg2)
 /// @endcond
 
@@ -101,22 +100,22 @@ extern "C"
  * \param[in] format_string_index index of the format string passed to the function
  * \param[in] first_to_check_index index of the first "optional argument"
  */
-#define RCUTILS_ATTRIBUTE_PRINTF_FORMAT(format_string_index, first_to_check_index) \
-  __attribute__ ((format(printf, format_string_index, first_to_check_index)))
-#endif  // !defined _WIN32 || defined __CYGWIN__
+#define RCUTILS_ATTRIBUTE_PRINTF_FORMAT(format_string_index, first_to_check_index)                 \
+  __attribute__((format(printf, format_string_index, first_to_check_index)))
+#endif // !defined _WIN32 || defined __CYGWIN__
 
 /// Macro to declare deprecation in the platform appropriate manner.
 #ifndef _WIN32
-# define RCUTILS_DEPRECATED __attribute__((deprecated))
+#define RCUTILS_DEPRECATED __attribute__((deprecated))
 #else
-# define RCUTILS_DEPRECATED __declspec(deprecated)
+#define RCUTILS_DEPRECATED __declspec(deprecated)
 #endif
 
 /// Macro to declare deprecation in the platform appropriate manner with a message.
 #ifndef _WIN32
-# define RCUTILS_DEPRECATED_WITH_MSG(msg) __attribute__((deprecated(msg)))
+#define RCUTILS_DEPRECATED_WITH_MSG(msg) __attribute__((deprecated(msg)))
 #else
-# define RCUTILS_DEPRECATED_WITH_MSG(msg) __declspec(deprecated(msg))
+#define RCUTILS_DEPRECATED_WITH_MSG(msg) __declspec(deprecated(msg))
 #endif
 
 // Provide the compiler with branch prediction information
@@ -125,57 +124,66 @@ extern "C"
  * \def RCUTILS_LIKELY
  * Instruct the compiler to optimize for the case where the argument equals 1.
  */
-# define RCUTILS_LIKELY(x) __builtin_expect((x), 1)
+#define RCUTILS_LIKELY(x) __builtin_expect((x), 1)
 /**
  * \def RCUTILS_UNLIKELY
  * Instruct the compiler to optimize for the case where the argument equals 0.
  */
-# define RCUTILS_UNLIKELY(x) __builtin_expect((x), 0)
+#define RCUTILS_UNLIKELY(x) __builtin_expect((x), 0)
 #else
 /**
  * \def RCUTILS_LIKELY
  * No op since Windows doesn't support providing branch prediction information.
  */
-# define RCUTILS_LIKELY(x) (x)
+#define RCUTILS_LIKELY(x) (x)
 /**
  * \def RCUTILS_UNLIKELY
  * No op since Windows doesn't support providing branch prediction information.
  */
-# define RCUTILS_UNLIKELY(x) (x)
-#endif  // _WIN32
+#define RCUTILS_UNLIKELY(x) (x)
+#endif // _WIN32
 
 // Provide the compiler a hint about an argument being nonnull when possible.
 #ifndef _WIN32
-# define RCUTILS_NONNULL __attribute__((__nonnull__))
-# define RCUTILS_NONNULL_ARGS(...) __attribute__((__nonnull__(__VA_ARGS__)))
-# define RCUTILS_RETURNS_NONNULL __attribute__((__returns_nonnull__))
-# define RCUTILS_HAS_NONNULL 1
+#define RCUTILS_NONNULL __attribute__((__nonnull__))
+#define RCUTILS_NONNULL_ARGS(...) __attribute__((__nonnull__(__VA_ARGS__)))
+#define RCUTILS_RETURNS_NONNULL __attribute__((__returns_nonnull__))
+#define RCUTILS_HAS_NONNULL 1
 #else
-# define RCUTILS_NONNULL
-# define RCUTILS_NONNULL_ARGS(...)
-# define RCUTILS_RETURNS_NONNULL
-# define RCUTILS_HAS_NONNULL 0
-#endif  // _WIN32
+#define RCUTILS_NONNULL
+#define RCUTILS_NONNULL_ARGS(...)
+#define RCUTILS_RETURNS_NONNULL
+#define RCUTILS_HAS_NONNULL 0
+#endif // _WIN32
 
 #if defined RCUTILS_ENABLE_FAULT_INJECTION
 #include "rcutils/testing/fault_injection.h"
 
 /**
  * \def RCUTILS_CAN_RETURN_WITH_ERROR_OF
+ * 表示该函数可能返回错误值的宏。
  * Indicating macro that the function intends to return possible error value.
  *
+ * 将此宏作为函数的第一行。例如：
  * Put this macro as the first line in the function. For example:
  *
  * int rcutils_function_that_can_fail() {
  *   RCUTILS_CAN_RETURN_WITH_ERROR_OF(RCUTILS_RET_INVALID_ARGUMENT);
+ *   ...  // 函数的其余部分
  *   ...  // rest of function
  * }
  *
+ * 目前，如果启用了故障注入，此宏只是简单地调用 `RCUTILS_FAULT_INJECTION_MAYBE_RETURN_ERROR`。然而，对于源代码来说，宏注释
+ * `RCUTILS_CAN_RETURN_WITH_ERROR_OF` 有助于澄清函数可能返回表示错误的值以及这些值是什么。
  * For now, this macro just simply calls `RCUTILS_FAULT_INJECTION_MAYBE_RETURN_ERROR` if fault
  * injection is enabled. However, for source code, the macro annotation
  * `RCUTILS_CAN_RETURN_WITH_ERROR_OF` helps clarify that a function may return a value signifying
  * an error and what those are.
  *
+ * 通常，您应该只包含一个起源于您正在注释的函数的返回值，而不是一个已经使用
+ *`RCUTILS_CAN_RETURN_WITH_ERROR_OF` 注释的调用函数传递的返回值。如果您正在传递一个调用函数的返回值，
+ * 但是该函数没有使用 `RCUTILS_CAN_RETURN_WITH_ERROR_OF` 进行注释，那么您可能会考虑首先对该函数进行注释。如果由于某种原因，
+ * 这是不可取或不可能的，那么请像注释源自您的函数一样注释您的函数。
  * In general, you should only include a return value that originates in the function you're
  * annotating instead of one that is merely passed on from a called function already annotated with
  *`RCUTILS_CAN_RETURN_WITH_ERROR_OF`. If you are passing on return values from a called function,
@@ -184,50 +192,51 @@ extern "C"
  * then annotate your function as if the return values you are passing on originated from your
  * function.
  *
- * If the function can return multiple return values indicating separate failure types, each one
- * should go on a separate line.
+ * 如果函数可以返回多个表示不同失败类型的返回值，则每个返回值都应在单独的行上。
+ * (If the function can return multiple return values indicating separate failure types, each one should go on a separate line.)
  *
- * If in your function, there are expected effects on output parameters that occur during
- * the failure case, then it will introduce a discrepancy between fault injection testing and
- * production operation. This is because the fault injection will cause the function to return
- * where this macro is used, not at the location the error values are typically returned. To help
- * protect against this scenario you may consider adding unit tests that check your function does
- * not modify output parameters when it actually returns a failing error code if it's possible for
- * your code.
+ * 如果在您的功能中，在故障情况下会对输出参数产生预期的影响，那么它将在故障注入测试和生产操作之间引入差异。
+ * (If in your function, there are expected effects on output parameters that occur during the failure case, then it will introduce a discrepancy between fault injection testing and production operation.)
+ * 这是因为故障注入会导致函数返回到使用此宏的位置，而不是通常返回错误值的位置。
+ * (This is because the fault injection will cause the function to return where this macro is used, not at the location the error values are typically returned.)
+ * 为了帮助防止这种情况，您可以考虑添加单元测试，检查您的功能在实际返回失败错误代码时是否修改了输出参数（如果您的代码可能的话）。
+ * (To help protect against this scenario you may consider adding unit tests that check your function does not modify output parameters when it actually returns a failing error code if it's possible for your code.)
  *
- * If your function is void, this macro can be used without parameters. However, for the above
- * reasoning, there should be no side effects on output parameters for all possible early returns.
+ * 如果你的函数是void，这个宏可以不带参数使用。然而，根据上述原理，所有可能的早期返回都不应对输出参数产生副作用。
+ * (If your function is void, this macro can be used without parameters. However, for the above reasoning, there should be no side effects on output parameters for all possible early returns.)
  *
- * \param error_return_value the value returned as a result of an error. It does not need to be
- * a rcutils_ret_t type. It could also be NULL, -1, a string error message, etc
+ * \param error_return_value 作为错误结果返回的值。它不需要是rcutils_ret_t类型。它也可以是NULL、-1、字符串错误消息等。
+ * (error_return_value the value returned as a result of an error. It does not need to be a rcutils_ret_t type. It could also be NULL, -1, a string error message, etc)
  */
-# define RCUTILS_CAN_RETURN_WITH_ERROR_OF(error_return_value) \
+#define RCUTILS_CAN_RETURN_WITH_ERROR_OF(error_return_value)                                       \
   RCUTILS_FAULT_INJECTION_MAYBE_RETURN_ERROR(error_return_value);
 
 /**
  * \def RCUTILS_CAN_FAIL_WITH
- * Indicating macro similar to RCUTILS_CAN_RETURN_WITH_ERROR_OF but for use with more complicated
- * statements.
+ * 表示宏，类似于 RCUTILS_CAN_RETURN_WITH_ERROR_OF，但用于更复杂的语句。
+ * Indicating macro similar to RCUTILS_CAN_RETURN_WITH_ERROR_OF but for use with more complicated statements.
  *
+ * `failure_code` 将在一个作用域内的 if 块中执行，因此在其中声明的任何变量在宏之外都无法使用。
  * The `failure_code` will be executed inside a scoped if block, so any variables declared within
  * will not be available outside of the macro.
  *
+ * 需要这个版本的一个例子是，如果在函数中可能发生副作用。例如，在 snprintf 中，rcutils_snprintf 需要在失败时设置 errno 并返回 -1。此宏用于捕获两种效果。
  * One example where you might need this version, is if a side-effect may occur within a function.
  * For example, in snprintf, rcutils_snprintf needs to set both errno and return -1 on failure.
  * This macro is used to capture both effects.
  *
+ * \param failure_code 代表此函数中失败情况的代码。
  * \param failure_code Code that is representative of the failure case in this function.
  */
-# define RCUTILS_CAN_FAIL_WITH(failure_code) \
-  RCUTILS_FAULT_INJECTION_MAYBE_FAIL(failure_code);
+#define RCUTILS_CAN_FAIL_WITH(failure_code) RCUTILS_FAULT_INJECTION_MAYBE_FAIL(failure_code);
 
 #else
-# define RCUTILS_CAN_RETURN_WITH_ERROR_OF(error_return_value)
-# define RCUTILS_CAN_FAIL_WITH(failure_code)
-#endif  // defined RCUTILS_ENABLE_FAULT_INJECTION
+#define RCUTILS_CAN_RETURN_WITH_ERROR_OF(error_return_value)
+#define RCUTILS_CAN_FAIL_WITH(failure_code)
+#endif // defined RCUTILS_ENABLE_FAULT_INJECTION
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // RCUTILS__MACROS_H_
+#endif // RCUTILS__MACROS_H_

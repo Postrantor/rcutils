@@ -16,8 +16,7 @@
 #define COMMON_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include "rcutils/error_handling.h"
@@ -26,4 +25,4 @@ extern "C"
 }
 #endif
 
-#endif  // COMMON_H_
+#endif // COMMON_H_

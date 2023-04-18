@@ -22,10 +22,10 @@
 #include "osrf_testing_tools_cpp/scope_exit.hpp"
 
 #ifdef RMW_IMPLEMENTATION
-# define CLASSNAME_(NAME, SUFFIX) NAME ## __ ## SUFFIX
-# define CLASSNAME(NAME, SUFFIX) CLASSNAME_(NAME, SUFFIX)
+#define CLASSNAME_(NAME, SUFFIX) NAME##__##SUFFIX
+#define CLASSNAME(NAME, SUFFIX) CLASSNAME_(NAME, SUFFIX)
 #else
-# define CLASSNAME(NAME, SUFFIX) NAME
+#define CLASSNAME(NAME, SUFFIX) NAME
 #endif
 
 using osrf_testing_tools_cpp::memory_tools::disable_monitoring_in_all_threads;
@@ -35,7 +35,7 @@ using osrf_testing_tools_cpp::memory_tools::on_unexpected_free;
 using osrf_testing_tools_cpp::memory_tools::on_unexpected_malloc;
 using osrf_testing_tools_cpp::memory_tools::on_unexpected_realloc;
 
-class CLASSNAME (TestAllocatorFixture, RMW_IMPLEMENTATION) : public ::testing::Test
+class CLASSNAME(TestAllocatorFixture, RMW_IMPLEMENTATION) : public ::testing::Test
 {
 public:
   CLASSNAME(TestAllocatorFixture, RMW_IMPLEMENTATION)() {}
@@ -55,57 +55,47 @@ public:
 
 /* Tests the default allocator.
  */
-TEST_F(CLASSNAME(TestAllocatorFixture, RMW_IMPLEMENTATION), test_default_allocator_normal) {
+TEST_F(CLASSNAME(TestAllocatorFixture, RMW_IMPLEMENTATION), test_default_allocator_normal)
+{
   size_t mallocs = 0;
   size_t reallocs = 0;
   size_t callocs = 0;
   size_t frees = 0;
-  on_unexpected_malloc([&mallocs]() {mallocs++;});
-  on_unexpected_realloc([&reallocs]() {reallocs++;});
-  on_unexpected_calloc([&callocs]() {callocs++;});
-  on_unexpected_free([&frees]() {frees++;});
+  on_unexpected_malloc([&mallocs]() { mallocs++; });
+  on_unexpected_realloc([&reallocs]() { reallocs++; });
+  on_unexpected_calloc([&callocs]() { callocs++; });
+  on_unexpected_free([&frees]() { frees++; });
 
   rcutils_allocator_t allocator;
-  EXPECT_NO_MEMORY_OPERATIONS(
-  {
-    allocator = rcutils_get_default_allocator();
-  });
+  EXPECT_NO_MEMORY_OPERATIONS({ allocator = rcutils_get_default_allocator(); });
   EXPECT_EQ(0u, mallocs);
   EXPECT_EQ(0u, reallocs);
   EXPECT_EQ(0u, callocs);
   EXPECT_EQ(0u, frees);
 
   void * allocated_memory = nullptr;
-  EXPECT_NO_MEMORY_OPERATIONS(
-  {
-    allocated_memory = allocator.allocate(1024, allocator.state);
-  });
+  EXPECT_NO_MEMORY_OPERATIONS({ allocated_memory = allocator.allocate(1024, allocator.state); });
   EXPECT_EQ(1u, mallocs);
   EXPECT_NE(nullptr, allocated_memory);
   EXPECT_NO_MEMORY_OPERATIONS(
-  {
-    allocated_memory = allocator.reallocate(allocated_memory, 2048, allocator.state);
-  });
+    { allocated_memory = allocator.reallocate(allocated_memory, 2048, allocator.state); });
   EXPECT_EQ(1u, reallocs);
   EXPECT_NE(nullptr, allocated_memory);
-  EXPECT_NO_MEMORY_OPERATIONS(
-  {
+  EXPECT_NO_MEMORY_OPERATIONS({
     allocator.deallocate(allocated_memory, allocator.state);
     allocated_memory = allocator.zero_allocate(1024, sizeof(void *), allocator.state);
   });
   EXPECT_EQ(1u, callocs);
   EXPECT_NE(nullptr, allocated_memory);
-  EXPECT_NO_MEMORY_OPERATIONS(
-  {
-    allocator.deallocate(allocated_memory, allocator.state);
-  });
+  EXPECT_NO_MEMORY_OPERATIONS({ allocator.deallocate(allocated_memory, allocator.state); });
   EXPECT_EQ(1u, mallocs);
   EXPECT_EQ(1u, reallocs);
   EXPECT_EQ(1u, callocs);
   EXPECT_EQ(2u, frees);
 }
 
-TEST(test_allocator, realloc_failing_allocators) {
+TEST(test_allocator, realloc_failing_allocators)
+{
   void * allocated_memory = nullptr;
   EXPECT_EQ(nullptr, rcutils_reallocf(allocated_memory, 1024, nullptr));
 
@@ -113,7 +103,8 @@ TEST(test_allocator, realloc_failing_allocators) {
   EXPECT_EQ(nullptr, rcutils_reallocf(allocated_memory, 1024, &failing_allocator));
 }
 
-TEST(test_allocator, default_allocator_maybe_fail) {
+TEST(test_allocator, default_allocator_maybe_fail)
+{
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
 
   // Check allocate
@@ -123,10 +114,7 @@ TEST(test_allocator, default_allocator_maybe_fail) {
 
   void * pointer = allocator.allocate(1u, allocator.state);
   ASSERT_NE(nullptr, pointer);
-  OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
-  {
-    allocator.deallocate(pointer, allocator.state);
-  });
+  OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT({ allocator.deallocate(pointer, allocator.state); });
 
   // Check reallocate
   rcutils_fault_injection_set_count(RCUTILS_FAULT_INJECTION_FAIL_NOW);
